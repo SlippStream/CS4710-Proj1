@@ -69,5 +69,6 @@ active [N] proctype main () {
 }
 
 //ltl p1 {[] (main[0]@S1 && main[1]@S1) -> (main[0]:swap != main[1]:_pid && main[0]:swap != main[1]:swap)};
+// ltl p4 {!([] (main[0]@S1 -> !main[1]@S!))};
 ltl p1 {([] <> main[1]@BEGINLOOP) && ([] <> main[0]@BEGINLOOP)};
 //lti p3 {[] main[0]@SYNCED -> (A[0] != A[1] && A[0] < N)};
