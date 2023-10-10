@@ -3,13 +3,13 @@
 pid A[N];
 bool crit[N];
 bool initialized = 0;
-bool goagain = 0;
+bool syncguard = 1;
 chan swapped = [N] of { pid };
 
 active [N] proctype main () {
+    pid i = 0;
     if
         :: _pid == 0 -> {
-            pid i = 0;
             for(i: 0 .. N - 1) {
                  A[i] = i;
                 crit[i] = 0;
@@ -19,13 +19,13 @@ active [N] proctype main () {
         :: else;
     fi;
 
-    if
-        :: initialized;
-    fi;
-    
+    initialized;
+
     // Non-deterministically pick a random number.
     pid swap;
-    select (swap : 0 .. N - 1);
+    BEGINLOOP: select (swap : 0 .. N - 1);
+
+    syncguard;
 
     do
         :: !crit[_pid] && !crit[swap] -> atomic{
@@ -49,8 +49,21 @@ active [N] proctype main () {
     // I'm done
     swapped!_pid;
 
-    
+    if
+        :: _pid == 0 && full(swapped) -> {
+            syncguard = 0;
+            for(i: 0 .. N - 1) {
+                swapped?_;
+            }
+            syncguard = 1;
+        }
+        :: _pid != 0 && !(swapped??_pid) ;
+    fi;
+
+    goto BEGINLOOP
+
 
 }
 
-ltl p1 {[] (main[0]@S1 && main[1]@S1) -> (main[0]:swap != main[1]:_pid && main[0]:swap != main[1]:swap)};
+//ltl p1 {[] (main[0]@S1 && main[1]@S1) -> (main[0]:swap != main[1]:_pid && main[0]:swap != main[1]:swap)};
+ltl p1 {([] <> main[1]@BEGINLOOP) && ([] <> main[0]@BEGINLOOP)};
