@@ -4,7 +4,7 @@ pid A[N];
 bool crit[N];
 bool initialized = 0;
 bool goagain = 0;
-chan swapped = [N] of pid;
+chan swapped = [N] of { pid };
 
 active [N] proctype main () {
     if
@@ -16,7 +16,7 @@ active [N] proctype main () {
             }
             initialized = 1;
         }
-        :: else -> {};
+        :: else;
     fi;
 
     if
@@ -24,24 +24,25 @@ active [N] proctype main () {
     fi;
     
     // Non-deterministically pick a random number.
-    pid swap = select (0 .. N - 1);
+    pid swap;
+    select (swap : 0 .. N - 1);
 
     do
         :: !crit[_pid] && !crit[swap] -> atomic{
             if
-                !crit[_pid] && !crit[swap] -> {
+                :: !crit[_pid] && !crit[swap] -> {
                     crit[_pid] = 1;
                     crit[swap] = 1;
                     break;
                 };
-                :: else -> {};
+                :: else;
             fi;
         };
     od;
-
+    pid tmp;
     S1:
     // swappy code
-    pid tmp = A[swap];
+    tmp = A[swap];
     A[swap] = A[_pid];
     A[_pid] = tmp;
 
