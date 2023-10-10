@@ -46,6 +46,9 @@ active [N] proctype main () {
     A[swap] = A[_pid];
     A[_pid] = tmp;
 
+    crit[_pid] = 0;
+    crit[swap] = 0;
+
     // I'm done
     swapped!_pid;
 
@@ -57,7 +60,7 @@ active [N] proctype main () {
             }
             syncguard = 1;
         }
-        :: _pid != 0 && !(swapped??_pid) ;
+        :: _pid != 0 && !(swapped??[_pid]) ;
     fi;
 
     goto BEGINLOOP

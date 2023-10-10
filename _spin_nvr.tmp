@@ -1,0 +1,16 @@
+never p1 {    /* !(([] (<> ((main[1]@BEGINLOOP)))) && ([] (<> ((main[0]@BEGINLOOP))))) */
+T0_init:
+	do
+	:: (! (((main[1]@BEGINLOOP)))) -> goto accept_S5
+	:: (! (((main[0]@BEGINLOOP)))) -> goto accept_S10
+	:: (1) -> goto T0_init
+	od;
+accept_S5:
+	do
+	:: (! (((main[1]@BEGINLOOP)))) -> goto accept_S5
+	od;
+accept_S10:
+	do
+	:: (! (((main[0]@BEGINLOOP)))) -> goto accept_S10
+	od;
+}
