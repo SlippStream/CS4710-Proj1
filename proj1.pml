@@ -58,7 +58,7 @@ active [N] proctype main () {
             for(i: 0 .. N - 1) {
                 swapped?_;
             }
-            syncguard = 1;
+            SYNCED: syncguard = 1;
         }
         :: _pid != 0 && !(swapped??[_pid]) ;
     fi;
@@ -70,3 +70,4 @@ active [N] proctype main () {
 
 //ltl p1 {[] (main[0]@S1 && main[1]@S1) -> (main[0]:swap != main[1]:_pid && main[0]:swap != main[1]:swap)};
 ltl p1 {([] <> main[1]@BEGINLOOP) && ([] <> main[0]@BEGINLOOP)};
+//lti p3 {[] main[0]@SYNCED -> (A[0] != A[1] && A[0] < N)};
